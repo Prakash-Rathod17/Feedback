@@ -1,1 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tell the Corner Bookshop</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=Inter:wght@400;500;600&display=swap');
 
+  :root {
+    --paper: #FAF8F4;
+    --ink: #1F2A2E;
+    --teal: #2E5F5A;
+    --teal-dark: #1F4642;
+    --line: #CBC3B4;
+    --error: #A5432F;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 64px 20px;
+    line-height: 1.5;
+  }
+
+  main {
+    width: 100%;
+    max-width: 520px;
+  }
+
+  .eyebrow {
+    font-size: 14px;
+    color: var(--teal-dark);
+    margin: 0 0 8px 0;
+  }
+
+  h1 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 34px;
+    line-height: 1.25;
+    margin: 0 0 12px 0;
+    max-width: 22ch;
+  }
+
+  .intro {
+    font-size: 16px;
+    color: #45524F;
+    max-width: 46ch;
+    margin: 0 0 40px 0;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 13px;
+    color: #5B665F;
+  }
+
+  input, textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    color: var(--ink);
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--line);
+    padding: 8px 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus {
+    border-bottom-color: var(--teal);
+  }
+
+  textarea {
+    min-height: 100px;
+    line-height: 1.5;
+  }
+
+  .error-text {
+    font-size: 13px;
+    color: var(--error);
+    min-height: 16px;
+    margin: 0;
+  }
+
+  .field.has-error input,
+  .field.has-error textarea {
+    border-bottom-color: var(--error);
+  }
+
+  button {
+    align-self: flex-start;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--paper);
+    background: var(--teal);
+    border: none;
+    padding: 12px 28px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s ease;
+  }
+
+  button:hover {
+    background: var(--teal-dark);
+  }
+
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--teal-dark);
+    outline-offset: 2px;
+  }
+
+  .confirmation {
+    display: none;
+  }
+
+  .confirmation.visible {
+    display: block;
+    animation: rise 0.4s ease;
+  }
+
+  .confirmation h2 {
+    font-family: 'Source Serif 4', serif;
+    font-weight: 600;
+    font-size: 26px;
+    margin: 0 0 10px 0;
+  }
+
+  .confirmation p {
+    color: #45524F;
+    margin: 0 0 24px 0;
+  }
+
+  .confirmation button {
+    background: transparent;
+    color: var(--teal-dark);
+    border: 1px solid var(--line);
+  }
+
+  .confirmation button:hover {
+    background: #F0EDE4;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .confirmation.visible { animation: none; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div id="form-view">
+    <p class="eyebrow">Reader feedback</p>
+    <h1>What should we do differently?</h1>
+    <p class="intro">We read every note before we reorder stock or change the Saturday reading hour. Two minutes is all this takes.</p>
+
+    <form id="feedback-form" novalidate>
+      <div class="field" id="name-field">
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" autocomplete="name">
+        <p class="error-text" id="name-error"></p>
+      </div>
+
+      <div class="field" id="email-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" autocomplete="email">
+        <p class="error-text" id="email-error"></p>
+      </div>
+
+      <div class="field" id="message-field">
+        <label for="message">Your feedback</label>
+        <textarea id="message" name="message"></textarea>
+        <p class="error-text" id="message-error"></p>
+      </div>
+
+      <button type="submit">Send feedback</button>
+    </form>
+  </div>
+
+  <div class="confirmation" id="confirmation-view">
+    <h2>Got it, thank you.</h2>
+    <p>Your note has been sent. We'll follow up by email if we have a question.</p>
+    <button type="button" id="reset-button">Send another note</button>
+  </div>
+</main>
+
+<script>
+  const form = document.getElementById('feedback-form');
+  const formView = document.getElementById('form-view');
+  const confirmationView = document.getElementById('confirmation-view');
+  const resetButton = document.getElementById('reset-button');
+
+  const fields = {
+    name: {
+      input: document.getElementById('name'),
+      field: document.getElementById('name-field'),
+      error: document.getElementById('name-error'),
+      validate(value) {
+        if (value.trim().length === 0) return 'Enter your name.';
+        if (value.trim().length < 2) return 'Name is too short.';
+        return '';
+      }
+    },
+    email: {
+      input: document.getElementById('email'),
+      field: document.getElementById('email-field'),
+      error: document.getElementById('email-error'),
+      validate(value) {
+        if (value.trim().length === 0) return 'Enter your email.';
+        const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!pattern.test(value.trim())) return 'Enter a valid email address.';
+        return '';
+      }
+    },
+    message: {
+      input: document.getElementById('message'),
+      field: document.getElementById('message-field'),
+      error: document.getElementById('message-error'),
+      validate(value) {
+        if (value.trim().length === 0) return 'Enter a message.';
+        if (value.trim().length < 10) return 'Say a little more (10 characters minimum).';
+        return '';
+      }
+    }
+  };
+
+  function showError(key, message) {
+    const { field, error } = fields[key];
+    if (message) {
+      field.classList.add('has-error');
+      error.textContent = message;
+    } else {
+      field.classList.remove('has-error');
+      error.textContent = '';
+    }
+  }
+
+  Object.keys(fields).forEach((key) => {
+    fields[key].input.addEventListener('input', () => {
+      const message = fields[key].validate(fields[key].input.value);
+      showError(key, message);
+    });
+  });
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    let isValid = true;
+
+    Object.keys(fields).forEach((key) => {
+      const message = fields[key].validate(fields[key].input.value);
+      showError(key, message);
+      if (message) isValid = false;
+    });
+
+    if (!isValid) {
+      const firstInvalid = Object.keys(fields).find((key) => fields[key].error.textContent);
+      if (firstInvalid) fields[firstInvalid].input.focus();
+      return;
+    }
+
+    formView.style.display = 'none';
+    confirmationView.classList.add('visible');
+  });
+
+  resetButton.addEventListener('click', () => {
+    form.reset();
+    Object.keys(fields).forEach((key) => showError(key, ''));
+    confirmationView.classList.remove('visible');
+    formView.style.display = 'block';
+    fields.name.input.focus();
+  });
+</script>
+</body>
+</html>
